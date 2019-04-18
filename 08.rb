@@ -1,9 +1,11 @@
 class Wos
-  バッチ生成
+  #バッチ生成
   Encoding.default_external = 'UTF-8'
+puts "日付入力"
+  DATE = STDIN.gets.chomp!
+
   def txtxech
-      puts "日付,移管先,住所コード,回数,移管先"
-      date = gets.chomp! #日付
+      puts "移管先,回数(店舗移管の場合0),住所コード(店舗移管の場合入力不要),移管先"
       storeid = gets.chomp! #移管先店舗
       t = gets.to_i #回数
       l = []
@@ -20,23 +22,23 @@ class Wos
           @n << "\"#{storeid}\",\"#{i}\""
         end
         fromid = gets.chomp! #移管元店舗
-        @arr << "EXCHANGE_ADDRESS_#{date}_#{fromid}TO#{storeid}.txt" #バッチ名保存
-        題名を別ファイルに留保
-        anfile = File.open("tmp_#{date}.txt","w")
+        @arr << "EXCHANGE_ADDRESS_#{DATE}_#{fromid}TO#{storeid}.txt\n" #バッチ名保存
+       # 題名を別ファイルに留保
+        anfile = File.open("tmp_#{DATE}.txt","a")
         anfile.write(@arr.join)
         anfile.close()
         file = File.open("adbat.txt","r")
         lines = file.readlines
         file.close
-        テンプレートのコピーをベツファイルに出力(同DIR)
-        file = File.open("EXCHANGE_ADDRESS_#{date}_#{fromid}TO#{storeid}.txt","w")
+        #テンプレートのコピーをベツファイルに出力(同DIR)
+        file = File.open("EXCHANGE_ADDRESS_#{DATE}_#{fromid}TO#{storeid}.txt","w")
         file.write(lines.join)
         file.close()
-        住所コード書き込み
-        f = File.open("EXCHANGE_ADDRESS_#{date}_#{fromid}TO#{storeid}.txt","r")
+        #住所コード書き込み
+        f = File.open("EXCHANGE_ADDRESS_#{DATE}_#{fromid}TO#{storeid}.txt","r")
         buffer = f.read();
         buffer.gsub!(/from/,"#{fromid}")
-        f = File.open("EXCHANGE_ADDRESS_#{date}_#{fromid}TO#{storeid}.txt","w")
+        f = File.open("EXCHANGE_ADDRESS_#{DATE}_#{fromid}TO#{storeid}.txt","w")
         f.write(buffer)
          @n.each do |v|
             f.puts v
@@ -44,22 +46,22 @@ class Wos
         f.close()
      else #店舗移管の場合
       fromid = gets.chomp! #移管元店舗
-        @arr << "EXCHANGE_SHOP_#{date}_#{fromid}TO#{storeid}.txt" #バッチ名保存
-        題名を別ファイルに留保
-        anfile = File.open("tmp_#{date}.txt","w")
+        @arr << "EXCHANGE_SHOP_#{DATE}_#{fromid}TO#{storeid}.txt\n" #バッチ名保存
+        #題名を別ファイルに留保
+        anfile = File.open("tmp_#{DATE}.txt","a")
         anfile.write(@arr.join)
         anfile.close()
         file = File.open("shbat.txt","r")
         lines = file.readlines
         file.close
-        file = File.open("EXCHANGE_SHOP_#{date}_#{fromid}TO#{storeid}.txt","w")
+        file = File.open("EXCHANGE_SHOP_#{DATE}_#{fromid}TO#{storeid}.txt","w")
         file.write(lines.join)
         file.close()
-        f = File.open("EXCHANGE_SHOP_#{date}_#{fromid}TO#{storeid}.txt","r")
+        f = File.open("EXCHANGE_SHOP_#{DATE}_#{fromid}TO#{storeid}.txt","r")
         buffer = f.read();
         buffer.gsub!(/from/,"#{fromid}")
         buffer.gsub!(/to/,"#{storeid}")
-        f = File.open("EXCHANGE_SHOP_#{date}_#{fromid}TO#{storeid}.txt","w")
+        f = File.open("EXCHANGE_SHOP_#{DATE}_#{fromid}TO#{storeid}.txt","w")
         f.write(buffer)
         f.close()
      end
@@ -67,38 +69,35 @@ class Wos
     end
 
   def jobxp
-    puts "日付"
-    date = gets.to_i
     @arr = []
-      ファイル書き出し
-      @ar = File.open("tmp_#{date}.txt","r").readlines
+      #ファイル書き出し
+      @ar = File.open("tmp_#{DATE}.txt","r").readlines
       lnum = @ar.count
         @ar.each_index do |l|
            jnum = l+1
            title = @ar[l]
-           title.include?("ADDRESS") ? @arr = File.open("address.txt","r").readlines : @arr =  File.open("shop.txt","r").readlines
-           file1 = File.open("jobnet_#{date}0930.txt","a")
+           title.include?("ADDRESS") ? @arr = File.open("address.txt","r").readlines : @arr = File.open("shop.txt","r").readlines
+           file1 = File.open("jobnet_#{DATE}0930.txt","a")
              @arr.each do |i|
               file1.puts i
              end
            file1.close()
-           正規表現
-           jobfile = File.open("jobnet_#{date}0930.txt","r")
+           #正規表現で整形＋保存
+           jobfile = File.open("jobnet_#{DATE}0930.txt","r")
            buffer = jobfile.read()
              buffer.gsub!(/pre_job 0/, "\n")
              (buffer.gsub!(/title/,"#{title}"); buffer.gsub!(/\[\"/,""); buffer.gsub!(/\"\]/,""))
-             (buffer.gsub!(/date/,"#{date}"); buffer.gsub!(/jnum/,"#{jnum}"); buffer.gsub!(/pnum/,"#{l}"); buffer.gsub!(/lnum/,"#{lnum}"))
+             (buffer.gsub!(/date/,"#{DATE}"); buffer.gsub!(/jnum/,"#{jnum}"); buffer.gsub!(/pnum/,"#{l}"); buffer.gsub!(/lnum/,"#{lnum}"))
              buffer.gsub!(/\n(\s|　)*\n/, "\n")
-           jobfile = File.open("jobnet_#{date}0930.txt","w")
+           jobfile = File.open("jobnet_#{DATE}0930.txt","w")
            jobfile.write(buffer)
            jobfile.close()
         end
+           puts "--------------------------------\n生成完了\n--------------------------------"
   end
 
   def jobnet
-    puts "日付"
-    date = gets.to_i
-    file1 = File.open("jobnet_#{date}0930.txt","w")
+    file1 = File.open("jobnet_#{DATE}0930.txt","w")
     file2 = File.open("jobnet_tmprate.txt","r")
     lines2 = file2.readlines
     file1.write(lines2.join)
