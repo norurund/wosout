@@ -1,7 +1,7 @@
 class Wos
   #バッチ生成
   Encoding.default_external = 'UTF-8'
-puts "日付入力"
+  puts "日付入力"
   DATE = STDIN.gets.chomp!
 
   def txtxech
@@ -66,7 +66,7 @@ puts "日付入力"
         f.close()
      end
       puts "--------------------------------\n生成完了\n--------------------------------"
-    end
+   end
 
   def jobxp
     @arr = []
@@ -97,12 +97,26 @@ puts "日付入力"
   end
 
   def jobnet
+    puts "[0]商圏\n[1]店舗\n[2]どちらも"
     file1 = File.open("jobnet_#{DATE}0930.txt","w")
     file2 = File.open("jobnet_tmprate.txt","r")
     lines2 = file2.readlines
     file1.write(lines2.join)
     file1.close()
-  end
+    input = gets.to_i
+	if input == 0
+	  jobfile = File.open("jobnet_#{DATE}0930.txt","r")
+          buffer = jobfile.read()
+           (buffer.slice!(/SHOP_/); buffer.slice!(/店舗_/))
+	elsif input == 1
+	  jobfile = File.open("jobnet_#{DATE}0930.txt","r")
+          buffer = jobfile.read()
+           (buffer.slice!(/_ADDRESS/); buffer.gsub!(/_商圏/))
+        end
+        jobfile = File.open("jobnet_#{DATE}0930.txt","w")
+        jobfile.write(buffer)
+        jobfile.close()
+ end
 
   job = Wos.new
 
