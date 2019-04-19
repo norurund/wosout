@@ -1,4 +1,5 @@
 class Wos
+
   #バッチ生成
   Encoding.default_external = 'UTF-8'
   puts "日付入力"
@@ -93,6 +94,8 @@ class Wos
            jobfile.write(buffer)
            jobfile.close()
         end
+    #文字コード修正
+
            puts "--------------------------------\n生成完了\n--------------------------------"
   end
 
@@ -108,15 +111,18 @@ class Wos
 	  jobfile = File.open("jobnet_#{DATE}0930.txt","r")
           buffer = jobfile.read()
            (buffer.slice!(/SHOP_/); buffer.slice!(/店舗_/))
+    jobfile = File.open("jobnet_#{DATE}0930.txt","w")
+    jobfile.write(buffer)
+    jobfile.close()
 	elsif input == 1
 	  jobfile = File.open("jobnet_#{DATE}0930.txt","r")
           buffer = jobfile.read()
            (buffer.slice!(/_ADDRESS/); buffer.gsub!(/_商圏/))
+    jobfile = File.open("jobnet_#{DATE}0930.txt","w")
+    jobfile.write(buffer)
+    jobfile.close()
         end
-        jobfile = File.open("jobnet_#{DATE}0930.txt","w")
-        jobfile.write(buffer)
-        jobfile.close()
- end
+  end
 
   job = Wos.new
 
