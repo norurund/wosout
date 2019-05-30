@@ -1,0 +1,55 @@
+
+def reflectSlash(direction):
+    if direction == 'D':
+        return 'L'
+    elif direction == 'U':
+        return 'R'
+    elif direction == 'R':
+        return 'U'
+    elif direction == 'L':
+        return 'D'
+    else:
+        raise ValueError
+
+def reflectBackslash(direction):
+    if direction == 'D':
+        return 'R'
+    elif direction == 'U':
+        return 'L'
+    elif direction == 'R':
+        return 'D'
+    elif direction == 'L':
+        return 'U'
+    else:
+        raise ValueError
+
+def move(x,y,direction):
+    if direction == 'U':
+        return x, y-1
+    elif direction == 'D':
+        return x, y+1
+    elif direction == 'L':
+        return x-1, y
+    elif direction == 'R':
+        return x+1, y
+
+
+h, w = map(int, input().split())
+box = []
+
+for _ in range(h):
+    box += [input().replace('\\', 'b')]
+
+ans = 0
+x, y, direction = 0,0,'R'
+
+while -1 < x < w and -1 < y < h:
+    if box[y][x] == 'b':
+        direction = reflectBackslash(direction)
+    elif box[y][x] == '/':
+        direction = reflectSlash(direction)
+
+    x, y = move(x,y,direction)
+    ans += 1
+
+print(ans)
