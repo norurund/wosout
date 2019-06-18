@@ -1,3 +1,4 @@
+#標準入力で答えを入れていただく形になります。
 import sys
 ni = list(map(str,sys.stdin.readline().split()))
 ni.reverse()
@@ -22,7 +23,7 @@ for index, z  in enumerate(ni):
     stack.append(formula[z](x, y))
     print('%s %s %s =' % (y, z, x))
     
-#小数点で解を出す
+#小数点
 if stack[0] >= 1:
   print(int(stack[0]))
 else:
