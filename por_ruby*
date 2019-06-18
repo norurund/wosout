@@ -1,3 +1,4 @@
+#メソッドの引数で問題を入れていただく形になります。
 #四則演算
 def formula(a, b, ope)
     return b + a if ope == "+"
